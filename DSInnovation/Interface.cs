@@ -29,7 +29,7 @@ namespace DSInnovation
 			file.Submenu = filemenu;
 
 			MenuItem exit = new MenuItem("Exit");
-			exit.Activated += OnActivate;
+			exit.Activated += OnFileExited;
 			filemenu.Append(exit);
 
 			mb.Append(file);
@@ -51,6 +51,10 @@ namespace DSInnovation
 
 		void OnDelete(object obj, DeleteEventArgs args)
 		{
+			Application.Quit();
+		}
+
+		void OnFileExited (object obj, EventArgs args) {
 			Application.Quit();
 		}
 	}
