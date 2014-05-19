@@ -16,24 +16,42 @@ namespace DSInnovation
 	{
 		public Interface () : base("PointHair")
 		{
+			/*
+			 * 	Taille de la feêtre et position centré par défaut sur l'écran
+			 */ 
 			SetDefaultSize(960, 800);
 			SetPosition(WindowPosition.Center);
 
+			/*
+			 *	Créé une instance qui appel la fonction Quitter
+			 */
 			DeleteEvent += delegate {	Application.Quit();	};
 
+			/*
+			 * 	On créé l'objet barre de menu, ainsi qu'un container contenant les bouttons
+			 */
 			MenuBar mb = new MenuBar();
 			Fixed fix = new Fixed();
 
+			/*
+			 * 	On met en place le premier menu "Fichier" qui contient la fonction "Quitter"
+			 */
 			Menu filemenu = new Menu();
-			MenuItem file = new MenuItem("File");
+			MenuItem file = new MenuItem("Fichier");
 			file.Submenu = filemenu;
 
-			MenuItem exit = new MenuItem("Exit");
+			MenuItem exit = new MenuItem("Quitter");
 			exit.Activated += OnFileExited;
 			filemenu.Append(exit);
 
+			/*
+			 * 	On fixe les éléments du dessus dans l'emplacement du Menu
+			 */
 			mb.Append(file);
 
+			/*
+			 * 	On définit les différents bouttons avec leurs noms et leurs tailles
+			 */
 			Button btn1 = new Button("Ajouter");
 			btn1.SetSizeRequest(80, 40);
 			Button btn2 = new Button("Modifier");
@@ -41,11 +59,21 @@ namespace DSInnovation
 			Button btn3 = new Button("Supprimer");
 			btn3.SetSizeRequest(80, 40);
 
-			fix.Put (btn1, 100, 730);
-			fix.Put (btn2, 200, 730);
-			fix.Put (btn3, 300, 730);
+			/*
+			 * 	On fixe la position des bouttons (l'origine se situe en haut à gauche à la position (0,0))
+			 */
+			fix.Put (btn1, 100, 750);
+			fix.Put (btn2, 200, 750);
+			fix.Put (btn3, 300, 750);
 
+			/*
+			 * 	On attribut le container "Fixed" comme le principal pour nos bouttons
+			 */
 			Add (fix);
+
+			/*
+			 * 	Il s'agit d'une méthode qui affiche tous les éléments du code
+			 */
 			ShowAll();
 		}
 
