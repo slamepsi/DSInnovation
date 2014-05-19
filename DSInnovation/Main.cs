@@ -7,7 +7,7 @@ namespace DSInnovation
 	{
 		public static void Main (string[] args)
 		{
-
+			// test
 			Application.Init ();
 			MainWindow win = new MainWindow ();
 			win.Show ();
