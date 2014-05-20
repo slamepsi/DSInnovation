@@ -8,6 +8,7 @@ namespace serverDS
 
 		public static void Main (string[] args)
 		{
+			running = true;
 			new Server();
 		}
 
