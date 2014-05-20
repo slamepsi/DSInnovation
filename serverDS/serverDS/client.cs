@@ -12,6 +12,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Text;
+using System.Reflection;
 
 namespace serverDS
 {
@@ -30,14 +31,18 @@ namespace serverDS
 			listen.Start();
 		}
 
-		private void listenClient () {
+		private void listenClient () 
+		{
 			byte[] message = new byte[4096];
 
-			while ( MainClass.IsRunning ) {
+			while ( MainClass.IsRunning ) 
+			{
 				int byteRead = 0;
-				try {
+				try 
+				{
 					byteRead = stream.Read(message, 0, 4096);
-				} catch (Exception e) {
+				} catch (Exception e) 
+				{
 					Console.WriteLine("Error (1) : déconnexion du client. \n-"+e.Message);
 					return;
 				}
@@ -48,7 +53,28 @@ namespace serverDS
 				ASCIIEncoding encoder = new ASCIIEncoding();
 				string information = encoder.GetString (message, 0, 4096);
 				Console.WriteLine( information );
+
+				String[] NetString = information.Split(':');
+				switch( NetString[0])
+				{
+					case "addFamily":
+						add_family( NetString[1], NetString[2] ); // (string)nom, (string)adresse
+						break;
+					case "delFamily":
+						del_family( int.Parse(NetString[1]) ); // (int)id
+						break;
+				}
 			}
+		}
+
+		private void add_family (string nom, string adresse)
+		{
+			Console.WriteLine("Coucou");
+		}
+
+		private void del_family (int id)
+		{
+			Console.WriteLine("Coucou");
 		}
 	}
 }
