@@ -14,62 +14,113 @@ namespace DSInnovation
 {
 	public class Interface : Window
 	{
+		ListStore store;
+		Statusbar statusbar;
+
+		enum Column
+		{
+			Nom,
+			Prenom,
+			Points
+		}
+
+		personne[] test =
+		{
+			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
+			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
+			new personne("Argenson", "guillaume, chatte en chaleur", 30),
+			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
+			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
+			new personne("Argenson", "guillaume, chatte en chaleur", 30),
+			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
+			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
+			new personne("Argenson", "guillaume, chatte en chaleur", 30),
+			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
+			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
+			new personne("Argenson", "guillaume, chatte en chaleur", 30),
+			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
+			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
+			new personne("Argenson", "guillaume, chatte en chaleur", 30),
+			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
+			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
+			new personne("Argenson", "guillaume, chatte en chaleur", 30),
+			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
+			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
+			new personne("Argenson", "guillaume, chatte en chaleur", 30),
+			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
+			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
+			new personne("Argenson", "guillaume, chatte en chaleur", 30),
+			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
+			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
+			new personne("Argenson", "guillaume, chatte en chaleur", 30),
+			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
+			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
+			new personne("Argenson", "guillaume, chatte en chaleur", 30),
+			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
+			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
+			new personne("Argenson", "guillaume, chatte en chaleur", 30),
+			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
+			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
+			new personne("Argenson", "guillaume, chatte en chaleur", 30),
+			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
+			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
+			new personne("Argenson", "guillaume, chatte en chaleur", 30),
+			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
+			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
+			new personne("Argenson", "guillaume, chatte en chaleur", 30),
+			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
+			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
+			new personne("Argenson", "guillaume, chatte en chaleur", 30),
+			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
+			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
+			new personne("Argenson", "guillaume, chatte en chaleur", 30),
+			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
+			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
+			new personne("Argenson", "guillaume, chatte en chaleur", 30),
+			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
+			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
+			new personne("Argenson", "guillaume, chatte en chaleur", 30)
+		};
+
 		public Interface () : base("PointHair")
 		{
+
+
 			/*
 			 * 	Taille de la feêtre et position centré par défaut sur l'écran
 			 */ 
 			SetDefaultSize(960, 800);
 			SetPosition(WindowPosition.Center);
+			DeleteEvent+= delegate {
+				Application.Quit ();
+			};
 
-			/*
-			 *	Créé une instance qui appel la fonction Quitter
-			 */
-			DeleteEvent += delegate {	Application.Quit();	};
+			HBox hbox = new HBox(false, 8);
 
-			/*
-			 * 	On créé l'objet barre de menu, ainsi qu'un container contenant les bouttons
-			 */
-			MenuBar mb = new MenuBar();
-			Fixed fix = new Fixed();
+			// Interface de gauche
+			VBox vbox = new VBox(false, 8);
+			hbox.PackStart(vbox, true, true, 0);
 
-			/*
-			 * 	On met en place le premier menu "Fichier" qui contient la fonction "Quitter"
-			 */
-			Menu filemenu = new Menu();
-			MenuItem file = new MenuItem("Fichier");
-			file.Submenu = filemenu;
+			ScrolledWindow sw = new ScrolledWindow();
+			sw.ShadowType = ShadowType.EtchedIn;
+			sw.SetPolicy( PolicyType.Automatic, PolicyType.Automatic );
+			vbox.PackStart( sw, true, true, 0 );
 
-			MenuItem exit = new MenuItem("Quitter");
-			exit.Activated += OnFileExited;
-			filemenu.Append(exit);
+			store = CreateModel();
 
-			/*
-			 * 	On fixe les éléments du dessus dans l'emplacement du Menu
-			 */
-			mb.Append(file);
+			TreeView tree = new TreeView(store);
+			tree.RulesHint = true;
+			tree.RowActivated += OnRowActivated;
+			sw.Add ( tree );
 
-			/*
-			 * 	On définit les différents bouttons avec leurs noms et leurs tailles
-			 */
-			Button btn1 = new Button("Ajouter");
-			btn1.SetSizeRequest(80, 40);
-			Button btn2 = new Button("Modifier");
-			btn2.SetSizeRequest(80, 40);
-			Button btn3 = new Button("Supprimer");
-			btn3.SetSizeRequest(80, 40);
+			AddColumns(tree);
 
-			/*
-			 * 	On fixe la position des bouttons (l'origine se situe en haut à gauche à la position (0,0))
-			 */
-			fix.Put (btn1, 100, 750);
-			fix.Put (btn2, 200, 750);
-			fix.Put (btn3, 300, 750);
+			statusbar = new Statusbar();
 
-			/*
-			 * 	On attribut le container "Fixed" comme le principal pour nos bouttons
-			 */
-			Add (fix);
+			vbox.PackStart(statusbar, false, false, 0 );
+
+			Add (hbox);
+
 
 			/*
 			 * 	Il s'agit d'une méthode qui affiche tous les éléments du code
@@ -84,6 +135,49 @@ namespace DSInnovation
 
 		void OnFileExited (object obj, EventArgs args) {
 			Application.Quit();
+		}
+
+		void AddColumns(TreeView tree) {
+			CellRendererText rendertext = new CellRendererText();
+			TreeViewColumn column = new TreeViewColumn("Nom", rendertext, "text", Column.Nom);
+			column.SortColumnId = (int) Column.Nom;
+			tree.AppendColumn(column);
+
+			rendertext = new CellRendererText();
+			column = new TreeViewColumn("Membre", rendertext, "text", Column.Prenom);
+			column.SortColumnId = (int) Column.Prenom;
+			tree.AppendColumn(column);
+
+			rendertext = new CellRendererText();
+			column = new TreeViewColumn("Points", rendertext, "text", Column.Points );
+			column.SortColumnId = (int) Column.Points;
+			tree.AppendColumn(column);
+
+		}
+
+		void OnRowActivated(object sender, RowActivatedArgs args) {
+			TreeIter iter;
+			TreeView view = (TreeView) sender;
+
+			if(view.Model.GetIter(out iter, args.Path )) {
+				string row = (string) view.Model.GetValue(iter, (int) Column.Nom);
+				row += " " + (string) view.Model.GetValue( iter, (int) Column.Prenom);
+				row += " : " + view.Model.GetValue (iter, (int) Column.Points);
+				statusbar.Push(0, row);
+			}
+
+			socket test = (socket) MainClass.GetSocket;
+			test.sendMessage("addFamily:test");
+		}
+
+		ListStore CreateModel() {
+			ListStore store = new ListStore( typeof(string), typeof(string), typeof(int));
+
+			foreach( personne people in test ) {
+				store.AppendValues(people.nom, people.prenom, people.points);
+			}
+
+			return store;
 		}
 	}
 }

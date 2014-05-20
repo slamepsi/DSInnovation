@@ -39,10 +39,18 @@ namespace DSInnovation
 			} catch (Exception e) {
 				Console.WriteLine( "Connection error, code : 1\n"+e.Message );
 			}
+
+			sendMessage( "addFamily:ca" );
 		}
 
 		public void reception() {
 
+		}
+
+		public void sendMessage( string message) {
+			byte[] buffer = encoder.GetBytes( message );
+			stream.Write ( buffer, 0, buffer.Length );
+			stream.Flush ();
 		}
 	}
 }
