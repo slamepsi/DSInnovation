@@ -69,12 +69,12 @@ namespace serverDS
 
 		private void add_family (string nom, string adresse)
 		{
-			Console.WriteLine("Coucou");
+			Console.WriteLine("Family added");
 		}
 
 		private void del_family (int id)
 		{
-			Console.WriteLine("Coucou");
+			Console.WriteLine("Family errased");
 		}
 	}
 }
