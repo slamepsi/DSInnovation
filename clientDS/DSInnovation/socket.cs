@@ -40,7 +40,7 @@ namespace DSInnovation
 				Console.WriteLine( "Connection error, code : 1\n"+e.Message );
 			}
 
-			sendMessage( "addFamily:ca" );
+			sendMessage( "addFamily:ca:cou" );
 		}
 
 		public void reception() {

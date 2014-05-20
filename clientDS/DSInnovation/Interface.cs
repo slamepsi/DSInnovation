@@ -165,9 +165,6 @@ namespace DSInnovation
 				row += " : " + view.Model.GetValue (iter, (int) Column.Points);
 				statusbar.Push(0, row);
 			}
-
-			socket test = (socket) MainClass.GetSocket;
-			test.sendMessage("addFamily:test");
 		}
 
 		ListStore CreateModel() {
