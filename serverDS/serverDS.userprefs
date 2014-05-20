@@ -1,11 +1,37 @@
+<<<<<<< HEAD
 ﻿<Properties GitUserInfo="UsingMD">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" PreferredExecutionTarget="MonoDevelop.Default" />
+=======
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+>>>>>>> Stash
   <MonoDevelop.Ide.Workbench ActiveDocument="serverDS/client.cs">
     <Files>
+<<<<<<< HEAD
       <File FileName="serverDS/Main.cs" Line="1" Column="1" />
       <File FileName="serverDS/client.cs" Line="45" Column="35" />
       <File FileName="serverDS/Server.cs" Line="23" Column="19" />
+=======
+      <File FileName="serverDS/Main.cs" Line="17" Column="4" />
+      <File FileName="serverDS/Server.cs" Line="35" Column="31" />
+      <File FileName="serverDS/client.cs" Line="16" Column="2" />
+>>>>>>> Stash
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="serverDS" expanded="True">
+            <Node name="client.cs" selected="True" />
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="ClassPad">
+        <State expanded="True" selected="True" />
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
