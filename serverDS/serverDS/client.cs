@@ -34,12 +34,16 @@ namespace serverDS
 			byte[] message = new byte[4096];
 
 			while ( MainClass.IsRunning ) {
+				int byteRead = 0;
 				try {
-					stream.Read(message, 0, 4096);
+					byteRead = stream.Read(message, 0, 4096);
 				} catch (Exception e) {
 					Console.WriteLine("Error (1) : déconnexion du client. \n-"+e.Message);
 					return;
 				}
+
+				if(byteRead == 0 )
+					return;
 
 				ASCIIEncoding encoder = new ASCIIEncoding();
 				string information = encoder.GetString (message, 0, 4096);
