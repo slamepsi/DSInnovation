@@ -26,6 +26,7 @@ namespace DSInnovation
 
 		public socket ()
 		{
+			Console.WriteLine("try connection");
 			tcpclient = new TcpClient();
 			encoder = new ASCIIEncoding();
 

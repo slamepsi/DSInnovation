@@ -7,6 +7,7 @@ namespace DSInnovation
 	{
 		public static void Main (string[] args)
 		{
+			new socket();
 			// test
 			Application.Init ();
 			new Interface();
