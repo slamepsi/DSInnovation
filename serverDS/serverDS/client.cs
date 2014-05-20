@@ -22,6 +22,7 @@ namespace serverDS
 
 		public client ( object nouveauClient)
 		{
+			Console.WriteLine("client connected");
 			tcpClient = (TcpClient) nouveauClient;
 			stream = tcpClient.GetStream();
 
