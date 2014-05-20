@@ -14,8 +14,10 @@ namespace DSInnovation
 {
 	public class Interface : Window
 	{
-		ListStore store;
-		Statusbar statusbar;
+		private ListStore store;
+		private string nomLook;
+
+		private VBox vbox;
 
 		enum Column
 		{
@@ -26,65 +28,21 @@ namespace DSInnovation
 
 		personne[] test =
 		{
-			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
-			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
-			new personne("Argenson", "guillaume, chatte en chaleur", 30),
-			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
-			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
-			new personne("Argenson", "guillaume, chatte en chaleur", 30),
-			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
-			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
-			new personne("Argenson", "guillaume, chatte en chaleur", 30),
-			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
-			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
-			new personne("Argenson", "guillaume, chatte en chaleur", 30),
-			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
-			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
-			new personne("Argenson", "guillaume, chatte en chaleur", 30),
-			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
-			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
-			new personne("Argenson", "guillaume, chatte en chaleur", 30),
-			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
-			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
-			new personne("Argenson", "guillaume, chatte en chaleur", 30),
-			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
-			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
-			new personne("Argenson", "guillaume, chatte en chaleur", 30),
-			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
-			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
-			new personne("Argenson", "guillaume, chatte en chaleur", 30),
-			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
-			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
-			new personne("Argenson", "guillaume, chatte en chaleur", 30),
-			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
-			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
-			new personne("Argenson", "guillaume, chatte en chaleur", 30),
-			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
-			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
-			new personne("Argenson", "guillaume, chatte en chaleur", 30),
-			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
-			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
-			new personne("Argenson", "guillaume, chatte en chaleur", 30),
-			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
-			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
-			new personne("Argenson", "guillaume, chatte en chaleur", 30),
-			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
-			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
-			new personne("Argenson", "guillaume, chatte en chaleur", 30),
-			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
-			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
-			new personne("Argenson", "guillaume, chatte en chaleur", 30),
-			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
-			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
-			new personne("Argenson", "guillaume, chatte en chaleur", 30),
-			new personne("Lepretre", "Alexandre, Estelle, Véronique", 10),
-			new personne("Buirette", "Quentin, Leaiticia, osef", 20),
-			new personne("Argenson", "guillaume, chatte en chaleur", 30)
+			new personne("Lepretre", "Alexandre\nEstelle\nVéronique", 10),
+			new personne("Buirette", "Quentin\nLeaiticia\nosef", 20),
+			new personne("Argenson", "guillaume\nchatte à guillaume", 30),
+			new personne("Lepretre", "Alexandre\nEstelle\nVéronique", 10),
+			new personne("Buirette", "Quentin\nLeaiticia\nosef", 20),
+			new personne("Argenson", "guillaume\n chatte a guillaume", 30),
+			new personne("Lepretre", "Alexandre\nEstelle\nVéronique", 10),
+			new personne("Buirette", "Quentin\nLeaiticia\nosef", 20),
+			new personne("Argenson", "guillaume\nchatte en chaleur", 30),
+			new personne("PeteCouille", "Guillaume\nOlivier\nAlexandre\nQuentin\nFlorient\nJulien\nNicolas\nRobin\nTimothee", 100)
 		};
 
 		public Interface () : base("PointHair")
 		{
-
+			nomLook = "";
 
 			/*
 			 * 	Taille de la feêtre et position centré par défaut sur l'écran
@@ -97,9 +55,13 @@ namespace DSInnovation
 
 			HBox hbox = new HBox(false, 8);
 
-			// Interface de gauche
-			VBox vbox = new VBox(false, 8);
+			//////////////////////////////////////////////////
+			////////////// Interface de gauche ///////////////
+			//////////////////////////////////////////////////
+			vbox = new VBox(false, 8);
 			hbox.PackStart(vbox, true, true, 0);
+
+			vbox.SetSizeRequest(250, 800);
 
 			ScrolledWindow sw = new ScrolledWindow();
 			sw.ShadowType = ShadowType.EtchedIn;
@@ -115,16 +77,30 @@ namespace DSInnovation
 
 			AddColumns(tree);
 
-			statusbar = new Statusbar();
 
-			vbox.PackStart(statusbar, false, false, 0 );
+			//////////////////////////////////////////////////
+			////////////// Interface de gauche ///////////////
+			//////////////////////////////////////////////////
 
-			Add (hbox);
+			Fixed fix = new Fixed();
+			fix.SetSizeRequest(710, 800);
+
+			Label recherche = new Label("Rechercher par nom : ");
+			Entry entry = new Entry();
+			entry.Changed += loadClient;
+			entry.SetSizeRequest(200, 25);
+
+
+			fix.Put (recherche, 20, 15 );
+			fix.Put (entry, 150, 10 );
+			hbox.Add (fix);
+
 
 
 			/*
 			 * 	Il s'agit d'une méthode qui affiche tous les éléments du code
 			 */
+			Add (hbox);
 			ShowAll();
 		}
 
@@ -144,7 +120,7 @@ namespace DSInnovation
 			tree.AppendColumn(column);
 
 			rendertext = new CellRendererText();
-			column = new TreeViewColumn("Membre", rendertext, "text", Column.Prenom);
+			column = new TreeViewColumn("Prénom", rendertext, "text", Column.Prenom);
 			column.SortColumnId = (int) Column.Prenom;
 			tree.AppendColumn(column);
 
@@ -163,15 +139,23 @@ namespace DSInnovation
 				string row = (string) view.Model.GetValue(iter, (int) Column.Nom);
 				row += " " + (string) view.Model.GetValue( iter, (int) Column.Prenom);
 				row += " : " + view.Model.GetValue (iter, (int) Column.Points);
-				statusbar.Push(0, row);
 			}
+		}
+
+		void loadClient(object obj, EventArgs args) {
+			Entry text = (Entry) obj;
+			nomLook = text.Text;
+			//store = CreateModel();
+			Console.WriteLine(nomLook);
 		}
 
 		ListStore CreateModel() {
 			ListStore store = new ListStore( typeof(string), typeof(string), typeof(int));
 
 			foreach( personne people in test ) {
-				store.AppendValues(people.nom, people.prenom, people.points);
+				if( people.nom.Contains(nomLook) ) {
+					store.AppendValues(people.nom, people.prenom, people.points);
+				}
 			}
 
 			return store;

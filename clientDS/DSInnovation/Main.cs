@@ -8,7 +8,7 @@ namespace DSInnovation
 		private static socket connexion;
 		public static void Main (string[] args)
 		{
-			connexion = new socket();
+			//connexion = new socket();
 			Application.Init ();
 			new Interface();
 			Application.Run ();
