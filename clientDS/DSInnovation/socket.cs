@@ -30,6 +30,7 @@ namespace DSInnovation
 			encoder = new ASCIIEncoding();
 
 			try {
+				//adresse ip
 				tcpclient.Connect( IPAddress.Parse("192.168.1.3"), 27015 );
 				stream = tcpclient.GetStream();
 				receptionThread = new Thread( new ThreadStart(reception));
