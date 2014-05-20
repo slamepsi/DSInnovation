@@ -22,7 +22,7 @@ namespace serverDS
 
 		public Server ()
 		{
-			listener = new TcpListener ( IPAddress.Parse( "127.0.0.1" ), 27015 );
+			listener = new TcpListener ( IPAddress.Parse( "192.168.1.3" ), 27015 );
 			listenerThread = new Thread( new ThreadStart(ListenForClient));
 			listenerThread.Start();
 		}
