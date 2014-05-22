@@ -11,6 +11,8 @@ using System;
 using System.Threading;
 using System.Net;
 using System.Net.Sockets;
+using MySql.Data.MySqlClient;
+
 
 namespace serverDS
 {
@@ -18,7 +20,7 @@ namespace serverDS
 	{
 		private static TcpListener listener;
 		private static Thread listenerThread;
-
+		private static MySqlConnection connexion;
 
 		public Server ()
 		{

@@ -58,7 +58,7 @@ namespace serverDS
 				switch( NetString[0])
 				{
 					case "addFamily":
-						add_family( NetString[1], NetString[2] ); // (string)nom, (string)adresse
+						add_family( (string)NetString[1], (string)NetString[2] ); // (string)nom, (string)adresse
 						break;
 					case "delFamily":
 						del_family( int.Parse(NetString[1]) ); // (int)id
@@ -69,13 +69,24 @@ namespace serverDS
 
 		private void add_family (string nom, string adresse)
 		{
+			String cmdText = "INSERT INTO Famille (nom, adresse, points) VALUES (' ', ' ', )";
 			Console.WriteLine("Family added");
-		}
+ 		}
 
 		private void del_family (int id)
 		{
+			String cmdText = "DELETE FROM Famille WHERE nom = ' '";
 			Console.WriteLine("Family errased");
+		}
+
+		private void modif_family (string nom, string adresse, int points)
+		{
+
+		}
+
+		private void modif_points (int type, int code)
+		{
+
 		}
 	}
 }
-
