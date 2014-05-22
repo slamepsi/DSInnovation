@@ -9,6 +9,7 @@
 // ------------------------------------------------------------------------------
 using System;
 using Gtk;
+using System.Collections.Generic;
 
 namespace DSInnovation
 {
@@ -16,32 +17,38 @@ namespace DSInnovation
 	{
 		private ListStore store;
 		private string nomLook;
+		private TreeView tree;
+		private Label familleMembreLabel;
+		private int familleChoisi = -1;
+		private Label messageModifierMembre;
 
 		private VBox vbox;
 
 		enum Column
 		{
+			Id,
 			Nom,
 			Prenom,
 			Points
 		}
 
-		personne[] test =
-		{
-			new personne("Lepretre", "Alexandre\nEstelle\nVéronique", 10),
-			new personne("Buirette", "Quentin\nLeaiticia\nosef", 20),
-			new personne("Argenson", "guillaume\nchatte à guillaume", 30),
-			new personne("Lepretre", "Alexandre\nEstelle\nVéronique", 10),
-			new personne("Buirette", "Quentin\nLeaiticia\nosef", 20),
-			new personne("Argenson", "guillaume\n chatte a guillaume", 30),
-			new personne("Lepretre", "Alexandre\nEstelle\nVéronique", 10),
-			new personne("Buirette", "Quentin\nLeaiticia\nosef", 20),
-			new personne("Argenson", "guillaume\nchatte en chaleur", 30),
-			new personne("PeteCouille", "Guillaume\nOlivier\nAlexandre\nQuentin\nFlorient\nJulien\nNicolas\nRobin\nTimothee", 100)
-		};
+		public static List<Famille> familleListe = new List<Famille>();
+
+
+		private static string[] nomFamilleListe;
+
+
+		private void initialisationFamilleListe() {
+			nomFamilleListe = new string[familleListe.Count];
+			for (int i = 0; i < nomFamilleListe.Length; i++ ) {
+				nomFamilleListe[i] = familleListe[i].Nom;
+			}
+		}
 
 		public Interface () : base("PointHair")
 		{
+			initialisationFamilleListe();
+
 			nomLook = "";
 
 			/*
@@ -70,7 +77,7 @@ namespace DSInnovation
 
 			store = CreateModel();
 
-			TreeView tree = new TreeView(store);
+			tree = new TreeView(store);
 			tree.RulesHint = true;
 			tree.RowActivated += OnRowActivated;
 			sw.Add ( tree );
@@ -78,43 +85,192 @@ namespace DSInnovation
 			AddColumns(tree);
 
 
+
+
+
+
+
+
 			//////////////////////////////////////////////////
-			////////////// Interface de gauche ///////////////
+			////////////// Interface de droite ///////////////
 			//////////////////////////////////////////////////
+
+
+
+
+			//////////////////////////////////////////////////////
+			////////////// Interface ajout Famille ///////////////
+			//////////////////////////////////////////////////////
+			Fixed ajoutFamilleFixed = new Fixed();
+			ajoutFamilleFixed.SetSizeRequest( 710, 675);
+
+			Label nomFamilleLabel = new Label("Nom :");
+			Entry nomFamilleEntry = new Entry();
+			nomFamilleEntry.SetSizeRequest ( 200, 25 );
+
+			Label adresseFamilleLabel = new Label("Adresse :");
+			Entry adresseFamilleEntry = new Entry();
+			adresseFamilleEntry.SetSizeRequest(400, 25);
+
+			Button createFamille = new Button("Créer la famille");
+			createFamille.SetSizeRequest( 200, 50 );
+			createFamille.Clicked += delegate {
+				if( nomFamilleEntry.Text.Length > 2 ) {
+					familleListe.Add( new Famille( nomFamilleEntry.Text, adresseFamilleEntry.Text, 0 ) );
+					nomFamilleEntry.Text = "";
+					adresseFamilleEntry.Text = "";
+					store = CreateModel();
+					familleChoisi = -1;
+					tree.Model = store;
+				}
+			};
+
+
+			ajoutFamilleFixed.Put ( nomFamilleLabel, 50, 50 );
+			ajoutFamilleFixed.Put ( nomFamilleEntry, 90, 45 );
+			ajoutFamilleFixed.Put ( adresseFamilleLabel, 50, 100 );
+			ajoutFamilleFixed.Put ( adresseFamilleEntry, 110, 95 );
+			ajoutFamilleFixed.Put ( createFamille, 250, 150 );
+
+
+
+
+			//////////////////////////////////////////////////////
+			////////////// Interface ajout Membre ////////////////
+			//////////////////////////////////////////////////////
+
+			Fixed ajoutMembreFixed = new Fixed();
+			ajoutMembreFixed.SetSizeRequest( 710, 625 );
+
+			Label prenomMembreLabel = new Label("Prénom :");
+			Entry prenomMembreEntry = new Entry();
+			prenomMembreEntry.SetSizeRequest( 200, 25 );
+
+			Label genreMembreLabel = new Label("Genre :");
+			ComboBox genreMembreComboBox = new ComboBox(new String[] {"Homme", "Femme"});
+
+			familleMembreLabel = new Label("Famille : <choisissez votre famille dans la liste de gauche>");
+			//ComboBox familleMembreComboBox = new ComboBox(nomFamilleListe);
+
+			Button createMembre = new Button("Créer le membre");
+			createMembre.Clicked += delegate {
+				if(genreMembreComboBox.Active != -1 && prenomMembreEntry.Text.Length > 3) {
+					familleListe[familleChoisi].AddMembre(prenomMembreEntry.Text, genreMembreComboBox.Active );
+					prenomMembreEntry.Text = "";
+					genreMembreComboBox.Active = -1;
+					familleChoisi = -1;
+					familleMembreLabel.Text = "Famille : <choisissez votre famille dans la liste de gauche>";
+					store = CreateModel();
+					tree.Model = store;
+				}
+			};
+			createMembre.SetSizeRequest( 200, 50 );
+
+			ajoutMembreFixed.Put ( prenomMembreLabel, 50, 50 );
+			ajoutMembreFixed.Put ( prenomMembreEntry, 110, 45 );
+			ajoutMembreFixed.Put ( genreMembreLabel, 50, 100 );
+			ajoutMembreFixed.Put ( genreMembreComboBox, 105, 92 );
+			ajoutMembreFixed.Put ( familleMembreLabel, 50, 150 );
+			ajoutMembreFixed.Put ( createMembre, 250, 200 );
+
+			//////////////////////////////////////////////////////
+			///////////// Interface Modifier Membre //////////////
+			//////////////////////////////////////////////////////
+
+			Fixed modifierMembreFixed = new Fixed();
+			modifierMembreFixed.SetSizeRequest( 710, 625 );
+
+			messageModifierMembre = new Label("Veuillez choisir une famille à modifier dans la liste de gauche.");
+
+			modifierMembreFixed.Put ( messageModifierMembre, 50, 50 );
+
+
+			//////////////////////////////////////////////////////
+			///////////////// Interface Général //////////////////
+			//////////////////////////////////////////////////////
 
 			Fixed fix = new Fixed();
 			fix.SetSizeRequest(710, 800);
-
 			Label recherche = new Label("Rechercher par nom : ");
-			Entry entry = new Entry();
-			entry.Changed += loadClient;
-			entry.SetSizeRequest(200, 25);
+			Entry entryNom = new Entry();
+			entryNom.Changed += loadClient;
+			entryNom.SetSizeRequest(200, 25);
 
 
-			fix.Put (recherche, 20, 15 );
-			fix.Put (entry, 150, 10 );
-			hbox.Add (fix);
+			Button ajouterFamille = new Button("Ajouter une famille");
+			ajouterFamille.SetSizeRequest( 200, 35 );
+			ajouterFamille.Clicked += delegate {
+				modifierMembreFixed.HideAll();
+				ajoutFamilleFixed.ShowAll();
+				ajoutMembreFixed.HideAll();
+			};
+
+			Button ajouterMembre = new Button("Ajouter un membre");
+			ajouterMembre.SetSizeRequest( 200, 35 );
+			ajouterMembre.Clicked += delegate {
+				modifierMembreFixed.HideAll();
+				ajoutFamilleFixed.HideAll();
+				ajoutMembreFixed.ShowAll();
+			};
+
+			Button modifierFamille = new Button( "Modifier une famille / un client");
+			modifierFamille.SetSizeRequest( 200, 35 );
+			modifierFamille.Clicked += delegate {
+				if( familleChoisi == - 1 )
+					messageModifierMembre.Text = "Veuillez choisir dans la liste de gauche la famille à modifier.";
+				else
+					messageModifierMembre.Text = "";
+				modifierMembreFixed.ShowAll();
+				ajoutFamilleFixed.HideAll();
+				ajoutMembreFixed.HideAll();
+
+			};
 
 
 
-			/*
-			 * 	Il s'agit d'une méthode qui affiche tous les éléments du code
-			 */
+
+			Statusbar coupure = new Statusbar();
+			coupure.SetSizeRequest( 700, 1);
+
+
+
+
+			fix.Put ( recherche, 10, 15 );
+			fix.Put ( entryNom, 140, 10 );
+			fix.Put ( ajouterFamille, 25, 60 );
+			fix.Put ( ajouterMembre, 250, 60 );
+			fix.Put ( modifierFamille, 475, 60 );
+			fix.Put ( coupure, 0, 110 );
+			fix.Put ( ajoutFamilleFixed, 0, 125 );
+			fix.Put ( ajoutMembreFixed, 0, 125 );
+			fix.Put ( modifierMembreFixed, 0, 125 );
+			hbox.Add ( fix );
+
+
 			Add (hbox);
 			ShowAll();
+			ajoutFamilleFixed.HideAll ();
+			ajoutMembreFixed.HideAll ();
+			modifierMembreFixed.HideAll();
 		}
+
+
+
 
 		void OnDelete(object obj, DeleteEventArgs args)
 		{
 			Application.Quit();
 		}
-
 		void OnFileExited (object obj, EventArgs args) {
 			Application.Quit();
 		}
 
+
+
+
 		void AddColumns(TreeView tree) {
 			CellRendererText rendertext = new CellRendererText();
+
 			TreeViewColumn column = new TreeViewColumn("Nom", rendertext, "text", Column.Nom);
 			column.SortColumnId = (int) Column.Nom;
 			tree.AppendColumn(column);
@@ -131,33 +287,57 @@ namespace DSInnovation
 
 		}
 
+
+		///////////////////////////////////////////////////////////////////////
+		/////////////// Activation lorsque double click sur liste /////////////
+		///////////////////////////////////////////////////////////////////////
 		void OnRowActivated(object sender, RowActivatedArgs args) {
 			TreeIter iter;
 			TreeView view = (TreeView) sender;
 
 			if(view.Model.GetIter(out iter, args.Path )) {
 				string row = (string) view.Model.GetValue(iter, (int) Column.Nom);
-				row += " " + (string) view.Model.GetValue( iter, (int) Column.Prenom);
-				row += " : " + view.Model.GetValue (iter, (int) Column.Points);
+				familleMembreLabel.Text = "Famille : " + row;
+				messageModifierMembre.Text = "";
+				familleChoisi = (int) view.Model.GetValue(iter, (int) Column.Id);
 			}
 		}
 
+
+		///////////////////////////////////////////////////////////////////////
+		///////////////// Activation lorsque entry nom change /////////////////
+		///////////////////////////////////////////////////////////////////////
 		void loadClient(object obj, EventArgs args) {
 			Entry text = (Entry) obj;
 			nomLook = text.Text;
-			//store = CreateModel();
-			Console.WriteLine(nomLook);
+			store = CreateModel();
+			tree.Model = store;
+
 		}
 
-		ListStore CreateModel() {
-			ListStore store = new ListStore( typeof(string), typeof(string), typeof(int));
 
-			foreach( personne people in test ) {
-				if( people.nom.Contains(nomLook) ) {
-					store.AppendValues(people.nom, people.prenom, people.points);
+		///////////////////////////////////////////////////////////////////////
+		////////////////// Création de la liste de gauche  ////////////////////
+		///////////////////////////////////////////////////////////////////////
+		ListStore CreateModel() {
+			ListStore store = new ListStore( typeof(int), typeof(string), typeof(string), typeof(int));
+
+			int id = 0;
+			foreach( Famille familleInfo in familleListe ) {
+				string nom = (string)familleInfo.Nom;
+				if( nom.Contains(nomLook) ) {
+					string listeMembre = "";
+					for(int i =0; i < familleInfo.GetTailleListeMembre; i++ ) {
+						listeMembre += familleInfo.GetMembre(i);
+
+						if( i < familleInfo.GetTailleListeMembre - 1 ) {
+							listeMembre += "\n";
+						}
+					}
+					store.AppendValues( familleInfo.Id, familleInfo.Nom, listeMembre, familleInfo.Points);
+					id++;
 				}
 			}
-
 			return store;
 		}
 	}
