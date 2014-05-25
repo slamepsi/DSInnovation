@@ -1,0 +1,32 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="server2DS/client.cs">
+    <Files>
+      <File FileName="server2DS/client.cs" Line="86" Column="24" />
+      <File FileName="server2DS/Main.cs" Line="20" Column="19" />
+      <File FileName="server2DS/database.cs" Line="32" Column="3" />
+      <File FileName="server2DS/Server.cs" Line="22" Column="40" />
+      <File FileName="server2DS/methode.cs" Line="64" Column="51" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="server2DS" expanded="True">
+            <Node name="References" expanded="True" />
+            <Node name="client.cs" selected="True" />
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="ClassPad">
+        <State expanded="True" selected="True" />
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
