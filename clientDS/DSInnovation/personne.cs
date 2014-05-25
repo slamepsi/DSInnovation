@@ -73,8 +73,10 @@ namespace DSInnovation
 	{
 		private string _prenom;
 		private int _genre;
+		private int _dbid;
 
-		public Membre ( string prenom, int genre ) {
+		public Membre ( int dbid, string prenom, int genre ) {
+			this._dbid = dbid;
 			this._genre = genre;
 			this._prenom = prenom;
 		}

@@ -67,7 +67,7 @@ namespace DSInnovation
 					switch(infoSocket[0]) {
 					case "infoDb":
 						Interface.familleListe.Add( new Famille( int.Parse (infoSocket[1]), infoSocket[2], infoSocket[3], int.Parse (infoSocket[4]) ) );
-						for(int i = 5; i < infoSocket.Length; i+=2) {
+						for(int i = 5; i < infoSocket.Length; i+=3) {
 							Interface.familleListe[familleCourante].AddMembre( infoSocket[i], int.Parse(infoSocket[i+1]) );
 						}
 						familleCourante++;
@@ -80,7 +80,7 @@ namespace DSInnovation
 					case "CreateMember":
 						for( int i = 0; i < Interface.familleListe.Count; i++ ){
 							if( Interface.familleListe[i].Dbid == int.Parse (infoSocket[1])) {
-								Interface.familleListe[i].AddMembre( infoSocket[2], int.Parse( infoSocket[3]) );
+								Interface.familleListe[i].AddMembre( int.Parse(infoSocket[2]), infoSocket[3] ,int.Parse( infoSocket[4]) );
 								break;
 							}
 						}
