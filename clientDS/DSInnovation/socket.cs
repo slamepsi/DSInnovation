@@ -32,25 +32,76 @@ namespace DSInnovation
 
 			try {
 				//adresse ip
-				tcpclient.Connect( IPAddress.Parse("192.168.1.3"), 27015 );
+				tcpclient.Connect( IPAddress.Parse("192.168.1.9"), 27015 );
 				stream = tcpclient.GetStream();
 				receptionThread = new Thread( new ThreadStart(reception));
 				receptionThread.Start();
 			} catch (Exception e) {
 				Console.WriteLine( "Connection error, code : 1\n"+e.Message );
 			}
-
-			sendMessage( "addFamily:ca:cou" );
 		}
 
 		public void reception() {
+			byte [] message = new byte[16384];
+			int byteRead;
+			int familleCourante = 0;
 
+			while( true ) {
+				byteRead = 0;
+				try {
+					byteRead = stream.Read(message, 0, message.Length);
+				} catch ( Exception e ) {
+					return;
+				}
+
+				if(byteRead == 0)
+					break;
+
+				ASCIIEncoding encoder = new ASCIIEncoding();
+				string information = encoder.GetString(message, 0, byteRead);
+				string[] infoSocket = information.Split(':');
+
+				//Console.WriteLine( information );
+
+				try {
+					switch(infoSocket[0]) {
+					case "infoDb":
+						Interface.familleListe.Add( new Famille( int.Parse (infoSocket[1]), infoSocket[2], infoSocket[3], int.Parse (infoSocket[4]) ) );
+						for(int i = 5; i < infoSocket.Length; i+=2) {
+							Interface.familleListe[familleCourante].AddMembre( infoSocket[i], int.Parse(infoSocket[i+1]) );
+						}
+						familleCourante++;
+						Interface.refreshList();
+						break;
+					case "CreateFamily":
+						Interface.familleListe.Add( new Famille( int.Parse (infoSocket[1]), infoSocket[2], infoSocket[3], int.Parse (infoSocket[4]) ) );
+						Interface.refreshList();
+						break;
+					case "CreateMember":
+						for( int i = 0; i < Interface.familleListe.Count; i++ ){
+							if( Interface.familleListe[i].Dbid == int.Parse (infoSocket[1])) {
+								Interface.familleListe[i].AddMembre( infoSocket[2], int.Parse( infoSocket[3]) );
+								break;
+							}
+						}
+						Interface.refreshList();
+						break;
+					}
+				}catch (Exception e) {
+					while( Interface.familleListe.Count != 0) {
+						Interface.familleListe.RemoveAt(0);
+					}
+					Console.WriteLine("Error(2) " + e.Message);
+					sendMessage("error");
+				}
+			}
 		}
 
 		public void sendMessage( string message) {
 			byte[] buffer = encoder.GetBytes( message );
-			stream.Write ( buffer, 0, buffer.Length );
-			stream.Flush ();
+			NetworkStream localStream = stream;
+			localStream.Write ( buffer, 0, buffer.Length );
+			localStream.Flush ();
 		}
 	}
 }

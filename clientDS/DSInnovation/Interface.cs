@@ -15,9 +15,9 @@ namespace DSInnovation
 {
 	public class Interface : Window
 	{
-		private ListStore store;
-		private string nomLook;
-		private TreeView tree;
+		private static ListStore store;
+		private static string nomLook;
+		private static TreeView tree;
 		private Label familleMembreLabel;
 		private int familleChoisi = -1;
 		private Label messageModifierMembre;
@@ -116,12 +116,13 @@ namespace DSInnovation
 			createFamille.SetSizeRequest( 200, 50 );
 			createFamille.Clicked += delegate {
 				if( nomFamilleEntry.Text.Length > 2 ) {
-					familleListe.Add( new Famille( nomFamilleEntry.Text, adresseFamilleEntry.Text, 0 ) );
+					if( nomFamilleEntry.Text.Length > 15) {
+						nomFamilleEntry.Text = nomFamilleEntry.Text.Substring(0, 15);
+					}
+					MainClass.GetSocket.sendMessage("addFamily:" + nomFamilleEntry.Text + ":" + adresseFamilleEntry.Text );
 					nomFamilleEntry.Text = "";
 					adresseFamilleEntry.Text = "";
-					store = CreateModel();
 					familleChoisi = -1;
-					tree.Model = store;
 				}
 			};
 
@@ -155,13 +156,14 @@ namespace DSInnovation
 			Button createMembre = new Button("Créer le membre");
 			createMembre.Clicked += delegate {
 				if(genreMembreComboBox.Active != -1 && prenomMembreEntry.Text.Length > 3) {
-					familleListe[familleChoisi].AddMembre(prenomMembreEntry.Text, genreMembreComboBox.Active );
+					//familleListe[familleChoisi].AddMembre(prenomMembreEntry.Text, genreMembreComboBox.Active );
+
+
+					MainClass.GetSocket.sendMessage("addMember:"+ familleListe[familleChoisi].Dbid + ":" + prenomMembreEntry.Text + ":" + genreMembreComboBox.Active);
 					prenomMembreEntry.Text = "";
 					genreMembreComboBox.Active = -1;
 					familleChoisi = -1;
 					familleMembreLabel.Text = "Famille : <choisissez votre famille dans la liste de gauche>";
-					store = CreateModel();
-					tree.Model = store;
 				}
 			};
 			createMembre.SetSizeRequest( 200, 50 );
@@ -220,6 +222,7 @@ namespace DSInnovation
 					messageModifierMembre.Text = "Veuillez choisir dans la liste de gauche la famille à modifier.";
 				else
 					messageModifierMembre.Text = "";
+
 				modifierMembreFixed.ShowAll();
 				ajoutFamilleFixed.HideAll();
 				ajoutMembreFixed.HideAll();
@@ -310,8 +313,7 @@ namespace DSInnovation
 		void loadClient(object obj, EventArgs args) {
 			Entry text = (Entry) obj;
 			nomLook = text.Text;
-			store = CreateModel();
-			tree.Model = store;
+			refreshList();
 
 		}
 
@@ -319,7 +321,7 @@ namespace DSInnovation
 		///////////////////////////////////////////////////////////////////////
 		////////////////// Création de la liste de gauche  ////////////////////
 		///////////////////////////////////////////////////////////////////////
-		ListStore CreateModel() {
+		static ListStore CreateModel() {
 			ListStore store = new ListStore( typeof(int), typeof(string), typeof(string), typeof(int));
 
 			int id = 0;
@@ -339,6 +341,11 @@ namespace DSInnovation
 				}
 			}
 			return store;
+		}
+
+		public static void refreshList() {
+			store = CreateModel();
+			tree.Model = store;
 		}
 	}
 }

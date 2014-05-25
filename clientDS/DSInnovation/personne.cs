@@ -12,35 +12,23 @@ using System.Collections.Generic;
 
 namespace DSInnovation
 {
-	public class personne
-	{
-		public string nom;
-		public string prenom;
-		public int points;
-
-		public personne (string nom, string prenom, int points)
-		{
-			this.nom = nom;
-			this.prenom = prenom;
-			this.points = points;
-		}
-	}
-
 	public class Famille
 	{
 		private int _id;
 		private static int idStatic = 0;
+		private int _dbid;
 		private string _nom;
 		private string _adresse;
 		private int _points;
 		private List<Membre> membre;
 
 
-		public Famille(string nom, string adresse, int points) {
+		public Famille(int dbid, string nom, string adresse, int points) {
 			this._id = idStatic;
 			this._nom = nom;
 			this._adresse = adresse;
 			this._points = points;
+			this._dbid = dbid;
 			membre = new List<Membre>();
 			idStatic++;
 		}
@@ -62,6 +50,10 @@ namespace DSInnovation
 
 		public int Id {
 			get { return this._id; }
+		}
+
+		public int Dbid {
+			get { return this._dbid; }
 		}
 
 		public void AddMembre( string prenom, int genre ) {
