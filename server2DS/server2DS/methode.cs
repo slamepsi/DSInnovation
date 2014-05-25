@@ -58,21 +58,36 @@ namespace serverDS
 		// // // // //	    METHODE AJOUTER MEMBRE      // // // // // //
 		// // // // // // // // // // // // // // // // // // // // // //	*/
 
-		public static void add_member(int id, string prenom, int genre)
+		public static void add_member(int idFamille, string prenom, int genre)
 		{
 			cmd = new MySqlCommand();
 
 			cmd.Connection = database.GetConnexion;
-			cmd.CommandText = "INSERT INTO member (codeFamille, prenom, genre) VALUES (@id, @Prenom, @Genre)";
+			cmd.CommandText = "INSERT INTO member (codeFamille, prenom, genre) VALUES (@codeFamille, @Prenom, @Genre)";
 			cmd.Prepare();
 
-			cmd.Parameters.AddWithValue("@id", id);
+			cmd.Parameters.AddWithValue("@codeFamille", idFamille);
 			cmd.Parameters.AddWithValue("@Prenom", prenom);
 			cmd.Parameters.AddWithValue("@Genre", genre);
 
 			cmd.ExecuteNonQuery();
 
-			client.broadcast("CreateMember:" + id + ":" + prenom + ":" + genre );
+			// on récup les infos relative au membre dans la db (id)
+			cmd = new MySqlCommand();
+			cmd.Connection = database.GetConnexion;
+			cmd.CommandText = "SELECT * FROM member WHERE codeFamille = @idFamille";
+			
+			cmd.Prepare();
+			
+			cmd.Parameters.AddWithValue("@idFamille", idFamille);
+			
+			MySqlDataReader reader = cmd.ExecuteReader();
+			
+			reader.Read();
+
+			client.broadcast("CreateMember:" + idFamille + ":" + reader.GetInt16(0) + ":" + prenom + ":" + genre );
+
+			reader.Close();
 
 			Console.WriteLine("Membre ajouté");
 		}
@@ -81,18 +96,19 @@ namespace serverDS
 		// // // // //    METHODE SUPPRIMER FAMILLE     // // // // // //
 		// // // // // // // // // // // // // // // // // // // // // //	*/
 
-		public static void del_family(int code, string nom)
+		public static void del_family(int code)
 		{
 			cmd = new MySqlCommand();
 
 			cmd.Connection = database.GetConnexion;
-			cmd.CommandText = "DELETE FROM family WHERE nom = '@Nom' XOR code = '@id'";
+			cmd.CommandText = "DELETE FROM family WHERE code = '@id'";
 			cmd.Prepare();
 
-			cmd.Parameters.AddWithValue("@Nom", nom);
 			cmd.Parameters.AddWithValue("@id", code);
 
 			cmd.ExecuteNonQuery();
+
+			client.broadcast("DeleteFamily:"+ code);
 
 			Console.WriteLine("Famille supprimée");
 		}
@@ -101,18 +117,19 @@ namespace serverDS
 		// // // // //     METHODE SUPPRIMER MEMBRE     // // // // // //
 		// // // // // // // // // // // // // // // // // // // // // //	*/
 
-		public static void del_member(int id, string prenom)
+		public static void del_member(int id, int idFamily)
 		{
 			cmd = new MySqlCommand();
 			
 			cmd.Connection = database.GetConnexion;
-			cmd.CommandText = "DELETE FROM member WHERE prenom = '@Prenom' XOR id = '@id'";
+			cmd.CommandText = "DELETE FROM member WHERE id = '@id'";
 			cmd.Prepare();
 
 			cmd.Parameters.AddWithValue("@id", id);
-			cmd.Parameters.AddWithValue("@Prenom", prenom);
 
 			cmd.ExecuteNonQuery();
+
+			client.broadcast("DeleteMember:" + idFamily + ":" + id);
 
 			Console.WriteLine("Membre supprimé");
 		}
@@ -121,18 +138,21 @@ namespace serverDS
 		// // // // //     METHODE MODIFIER FAMILLE     // // // // // //
 		// // // // // // // // // // // // // // // // // // // // // //	*/
 
-		public static void upd_family(string nom, string adresse)
+		public static void upd_family(int code, string nom, string adresse)
 		{
 			cmd = new MySqlCommand();
 
 			cmd.Connection = database.GetConnexion;
-			cmd.CommandText = "UPDATE family (nom, adresse) VALUES (@Nom, @Adresse)";
+			cmd.CommandText = "UPDATE family (nom, adresse) VALUES (@Nom, @Adresse) WHERE code = @code";
 			cmd.Prepare();
 
+			cmd.Parameters.AddWithValue("@code", code);
 			cmd.Parameters.AddWithValue("@Nom", nom);
 			cmd.Parameters.AddWithValue("@Adresse", adresse);
 
 			cmd.ExecuteNonQuery();
+
+			client.broadcast("UpdateFamily:"+ code + ":" + nom + ":" + adresse);
 
 			Console.WriteLine("Famille modifiée");
 		}
@@ -141,18 +161,21 @@ namespace serverDS
 		// // // // //     METHODE MODIFIER MEMBRE      // // // // // //
 		// // // // // // // // // // // // // // // // // // // // // //	*/
 
-		public static void upd_member(string prenom, int genre)
+		public static void upd_member(int id, string prenom, int genre, int idFamily)
 		{
 			cmd = new MySqlCommand();
 			
 			cmd.Connection = database.GetConnexion;
-			cmd.CommandText = "UPDATE member (prenom, genre) VALUES (@Prenom, @Genre)";
+			cmd.CommandText = "UPDATE member (prenom, genre) VALUES (@Prenom, @Genre) WHERE code = @code";
 			cmd.Prepare();
 
 			cmd.Parameters.AddWithValue("@Prenom", prenom);
 			cmd.Parameters.AddWithValue("@Genre", genre);
+			cmd.Parameters.AddWithValue("@code", id);
 
 			cmd.ExecuteNonQuery();
+
+			client.broadcast("UpdateMember:" + idFamily + ":" + id + ":" + prenom + ":" + genre );
 
 			Console.WriteLine("Membre modifié");
 		}
@@ -161,19 +184,20 @@ namespace serverDS
 		// // // // //     METHODE MODIFIER POINTS      // // // // // //
 		// // // // // // // // // // // // // // // // // // // // // //	*/
 
-		public static void upd_point(int points)
+		public static void upd_point(int code, int points)
 		{
 			cmd = new MySqlCommand();
 
 			cmd.Connection = database.GetConnexion;
-			cmd.CommandText = "UPDATE family (points) VALUES (@Points)";
+			cmd.CommandText = "UPDATE family (points) VALUES (@Points) WHERE code = @code";
 			cmd.Prepare();
 
+			cmd.Parameters.AddWithValue("@Code", code);
 			cmd.Parameters.AddWithValue("@Points", points);
 
 			cmd.ExecuteNonQuery();
 
-			//client.broadcast("UpdatePoints:" + points);
+			client.broadcast("UpdatePoints:" + code + ":" + points);
 
 			Console.WriteLine("Points modifiés");
 		}
@@ -215,7 +239,7 @@ namespace serverDS
 				reader = cmd.ExecuteReader();
 
 				while( reader.Read() ) {
-					information[i] += ":" + reader.GetString(2) + ":" + reader.GetInt16(3);
+					information[i] += ":" + reader.GetInt16(0) + reader.GetString(2) + ":" + reader.GetInt16(3);
 				}
 
 				reader.Close();
