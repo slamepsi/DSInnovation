@@ -32,7 +32,7 @@ namespace DSInnovation
 
 			try {
 				//adresse ip
-				tcpclient.Connect( IPAddress.Parse("192.168.1.9"), 27015 );
+				tcpclient.Connect( IPAddress.Parse("192.168.2.1"), 27015 );
 				stream = tcpclient.GetStream();
 				receptionThread = new Thread( new ThreadStart(reception));
 				receptionThread.Start();
@@ -46,11 +46,12 @@ namespace DSInnovation
 			int byteRead;
 			int familleCourante = 0;
 
+
 			while( true ) {
 				byteRead = 0;
 				try {
 					byteRead = stream.Read(message, 0, message.Length);
-				} catch ( Exception e ) {
+				} catch {
 					return;
 				}
 
@@ -68,7 +69,7 @@ namespace DSInnovation
 					case "infoDb":
 						Interface.familleListe.Add( new Famille( int.Parse (infoSocket[1]), infoSocket[2], infoSocket[3], int.Parse (infoSocket[4]) ) );
 						for(int i = 5; i < infoSocket.Length; i+=3) {
-							Interface.familleListe[familleCourante].AddMembre( infoSocket[i], int.Parse(infoSocket[i+1]) );
+							Interface.familleListe[familleCourante].AddMembre( int.Parse (infoSocket[i]), infoSocket[i+1], int.Parse(infoSocket[i+2]) );
 						}
 						familleCourante++;
 						Interface.refreshList();
@@ -86,6 +87,67 @@ namespace DSInnovation
 						}
 						Interface.refreshList();
 						break;
+					case "DeleteFamily":
+						for(int i = 0; i < Interface.familleListe.Count; i++) {
+							if( Interface.familleListe[i].Dbid == int.Parse(infoSocket[1]) ) {
+								Famille.IdStaticDecrement();
+								for( int k = i; k < Interface.familleListe.Count; k++ ) {
+									Interface.familleListe[k].IdDecrement();
+								}
+								Interface.familleListe.RemoveAt(i);
+								break;
+							}
+						}
+						Interface.refreshList();
+						break;
+					case "DeleteMember":
+						for(int i = 0; i < Interface.familleListe.Count; i++) {
+							if( Interface.familleListe[i].Dbid == int.Parse(infoSocket[1]) ) {
+								for(int j = 0; j < Interface.familleListe[i].GetTailleListeMembre; j++) {
+									if(Interface.familleListe[i].GetMembre(j).Dbid == int.Parse(infoSocket[2]) ) {
+										Interface.familleListe[i].DelMembre(j);
+										break;
+									}
+								}
+								break;
+							}
+						}
+						Interface.refreshList();
+						break;
+					case "UpdateFamily":
+						for(int i = 0; i < Interface.familleListe.Count; i++) {
+							if( Interface.familleListe[i].Dbid == int.Parse(infoSocket[1]) ) {
+								Interface.familleListe[i].Nom = infoSocket[2];
+								Interface.familleListe[i].Adresse = infoSocket[3];
+								break;
+							}
+						}
+						Interface.refreshList();
+						break;
+					case "UpdateMember":
+						for(int i = 0; i < Interface.familleListe.Count; i++) {
+							if( Interface.familleListe[i].Dbid == int.Parse(infoSocket[1]) ) {
+								for(int j = 0; j < Interface.familleListe[i].GetTailleListeMembre; j++) {
+									if(Interface.familleListe[i].GetMembre(j).Dbid == int.Parse(infoSocket[2]) ) {
+										Interface.familleListe[i].GetMembre(j).Prenom = infoSocket[3];
+										Interface.familleListe[i].GetMembre(j).Genre = int.Parse (infoSocket[4]);
+										break;
+									}
+								}
+								break;
+							}
+						}
+						Interface.refreshList();
+						break;
+					case "UpdatePoints":
+						for(int i = 0; i < Interface.familleListe.Count; i++) {
+							if( Interface.familleListe[i].Dbid == int.Parse(infoSocket[1]) ) {
+								Interface.familleListe[i].Points = int.Parse (infoSocket[2]);
+								break;
+							}
+						}
+						Interface.refreshList();
+						break;
 					}
 				}catch (Exception e) {
 					while( Interface.familleListe.Count != 0) {
@@ -97,11 +159,17 @@ namespace DSInnovation
 			}
 		}
 
-		public void sendMessage( string message) {
+		public void sendMessage( string message ) {
 			byte[] buffer = encoder.GetBytes( message );
 			NetworkStream localStream = stream;
 			localStream.Write ( buffer, 0, buffer.Length );
 			localStream.Flush ();
+		}
+
+		public void disconnect() {
+			stream.Close();
+			tcpclient.Close();
+			receptionThread.Abort();
 		}
 	}
 }

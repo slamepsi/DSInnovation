@@ -10,17 +10,26 @@
 using System;
 using Gtk;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace DSInnovation
 {
+
 	public class Interface : Window
 	{
 		private static ListStore store;
 		private static string nomLook;
 		private static TreeView tree;
 		private Label familleMembreLabel;
-		private int familleChoisi = -1;
+		private Fixed modifierMembreFixed;
+		private static int familleChoisi = -1;
 		private Label messageModifierMembre;
+		private static TreeView treeMember;
+		private static ListStore storeMember;
+		private Entry nomModifierMembreEntry;
+		private Entry adresseModifierMembreEntry;
+		private Label pointModifierLabel;
+		private int choixMenu = 0;
 
 		private VBox vbox;
 
@@ -45,6 +54,7 @@ namespace DSInnovation
 			}
 		}
 
+
 		public Interface () : base("PointHair")
 		{
 			initialisationFamilleListe();
@@ -57,8 +67,11 @@ namespace DSInnovation
 			SetDefaultSize(960, 800);
 			SetPosition(WindowPosition.Center);
 			DeleteEvent+= delegate {
+				MainClass.GetSocket.disconnect();
 				Application.Quit ();
 			};
+
+
 
 			HBox hbox = new HBox(false, 8);
 
@@ -83,9 +96,6 @@ namespace DSInnovation
 			sw.Add ( tree );
 
 			AddColumns(tree);
-
-
-
 
 
 
@@ -155,15 +165,20 @@ namespace DSInnovation
 
 			Button createMembre = new Button("Créer le membre");
 			createMembre.Clicked += delegate {
-				if(genreMembreComboBox.Active != -1 && prenomMembreEntry.Text.Length > 3) {
-					//familleListe[familleChoisi].AddMembre(prenomMembreEntry.Text, genreMembreComboBox.Active );
+				try {
+					if(genreMembreComboBox.Active != -1 && prenomMembreEntry.Text.Length > 3 && familleChoisi != -1 ) {
+						//familleListe[familleChoisi].AddMembre(prenomMembreEntry.Text, genreMembreComboBox.Active );
 
-
-					MainClass.GetSocket.sendMessage("addMember:"+ familleListe[familleChoisi].Dbid + ":" + prenomMembreEntry.Text + ":" + genreMembreComboBox.Active);
-					prenomMembreEntry.Text = "";
-					genreMembreComboBox.Active = -1;
-					familleChoisi = -1;
-					familleMembreLabel.Text = "Famille : <choisissez votre famille dans la liste de gauche>";
+						MainClass.GetSocket.sendMessage("addMember:"+ familleListe[familleChoisi].Dbid + ":" + prenomMembreEntry.Text + ":" + genreMembreComboBox.Active);
+						prenomMembreEntry.Text = "";
+						genreMembreComboBox.Active = -1;
+						familleChoisi = -1;
+						familleMembreLabel.Text = "Famille : <choisissez votre famille dans la liste de gauche>";
+					}
+				} catch {
+					modifierMembreFixed.HideAll();
+					ajoutFamilleFixed.ShowAll();
+					ajoutMembreFixed.HideAll();
 				}
 			};
 			createMembre.SetSizeRequest( 200, 50 );
@@ -175,16 +190,84 @@ namespace DSInnovation
 			ajoutMembreFixed.Put ( familleMembreLabel, 50, 150 );
 			ajoutMembreFixed.Put ( createMembre, 250, 200 );
 
+
+
 			//////////////////////////////////////////////////////
-			///////////// Interface Modifier Membre //////////////
+			/////// Interface Modifier Membre /Famille ///////////
 			//////////////////////////////////////////////////////
 
-			Fixed modifierMembreFixed = new Fixed();
+			modifierMembreFixed = new Fixed();
 			modifierMembreFixed.SetSizeRequest( 710, 625 );
 
 			messageModifierMembre = new Label("Veuillez choisir une famille à modifier dans la liste de gauche.");
 
+			Button addPoint = new Button("Ajouter des points");
+			addPoint.Clicked += delegate {
+				AddPoint test = new AddPoint(familleListe[familleChoisi].Dbid, familleListe[familleChoisi].Nom);
+				test.KeepAbove = true;
+			};
+
+			Button delPoint = new Button("Enlever des points");
+			delPoint.Clicked += delegate {
+				addPoint.CanFocus = false;
+				DelPoint test = new DelPoint(familleListe[familleChoisi].Dbid, familleListe[familleChoisi].Nom);
+				test.KeepAbove = true;
+			};
+
+			Label nomModifierMembreLabel = new Label("Nom : ");
+			nomModifierMembreEntry = new Entry();
+			nomModifierMembreEntry.SetSizeRequest( 150, 25 );
+
+			Label adresseModifierMembreLabel = new Label("Adresse : ");
+			adresseModifierMembreEntry = new Entry();
+			adresseModifierMembreEntry.SetSizeRequest( 500, 25 );
+
+			pointModifierLabel = new Label("Points : ");
+
+			storeMember = CreateModelMember();
+			treeMember = new TreeView(storeMember);
+			treeMember.RulesHint = true;
+			treeMember.RowActivated += delegate {
+				
+			};
+			AddColumnsMember(treeMember);
+			treeMember.SetSizeRequest( 200, 300 );
+
+
+			Button supprimerFamilleButton = new Button("Supprimer la famille");
+			supprimerFamilleButton.Clicked += delegate {
+				MainClass.GetSocket.sendMessage("delFamily:" + familleListe[familleChoisi].Dbid);
+				modifierMembreFixed.HideAll();
+				messageModifierMembre.Text = "Veuillez choisir dans la liste de gauche la famille à modifier.";
+				modifierMembreFixed.Show();
+				messageModifierMembre.Show();
+			};
+			Button modifierFamilleButton = new Button("Modifier la famille");
+			modifierFamilleButton.Clicked += delegate {
+				try {
+					MainClass.GetSocket.sendMessage("updFamily:"+familleListe[familleChoisi].Dbid + ":" + nomModifierMembreEntry.Text + 
+				                          	      ":" + adresseModifierMembreEntry.Text );
+				} catch {
+					modifierMembreFixed.HideAll();
+					messageModifierMembre.Text = "La famille Choisie n'existe plus.\n\nVeuillez choisir dans la liste de gauche la famille à modifier.";
+					modifierMembreFixed.Show();
+					messageModifierMembre.Show();
+				}
+			};
+
+
 			modifierMembreFixed.Put ( messageModifierMembre, 50, 50 );
+			modifierMembreFixed.Put ( addPoint, 75, 0 );
+			modifierMembreFixed.Put ( delPoint, 375, 0 );
+			modifierMembreFixed.Put ( nomModifierMembreLabel, 70, 50 );
+			modifierMembreFixed.Put ( nomModifierMembreEntry, 110, 45 );
+			modifierMembreFixed.Put ( adresseModifierMembreLabel, 50, 75 );
+			modifierMembreFixed.Put ( adresseModifierMembreEntry, 110, 70 );
+			modifierMembreFixed.Put ( pointModifierLabel, 60, 100 );
+			modifierMembreFixed.Put ( treeMember, 240, 150 );
+			modifierMembreFixed.Put ( supprimerFamilleButton, 50, 615 );
+			modifierMembreFixed.Put ( modifierFamilleButton, 550, 615 );
+
 
 
 			//////////////////////////////////////////////////////
@@ -202,6 +285,7 @@ namespace DSInnovation
 			Button ajouterFamille = new Button("Ajouter une famille");
 			ajouterFamille.SetSizeRequest( 200, 35 );
 			ajouterFamille.Clicked += delegate {
+				choixMenu = 1;
 				modifierMembreFixed.HideAll();
 				ajoutFamilleFixed.ShowAll();
 				ajoutMembreFixed.HideAll();
@@ -210,6 +294,7 @@ namespace DSInnovation
 			Button ajouterMembre = new Button("Ajouter un membre");
 			ajouterMembre.SetSizeRequest( 200, 35 );
 			ajouterMembre.Clicked += delegate {
+				choixMenu = 2;
 				modifierMembreFixed.HideAll();
 				ajoutFamilleFixed.HideAll();
 				ajoutMembreFixed.ShowAll();
@@ -218,12 +303,16 @@ namespace DSInnovation
 			Button modifierFamille = new Button( "Modifier une famille / un client");
 			modifierFamille.SetSizeRequest( 200, 35 );
 			modifierFamille.Clicked += delegate {
-				if( familleChoisi == - 1 )
+				choixMenu = 3;
+				if( familleChoisi == - 1 ) {
 					messageModifierMembre.Text = "Veuillez choisir dans la liste de gauche la famille à modifier.";
-				else
+					modifierMembreFixed.Show();
+					messageModifierMembre.Show();
+				} else {
 					messageModifierMembre.Text = "";
+					modifierMembreFixed.ShowAll();
+				}
 
-				modifierMembreFixed.ShowAll();
 				ajoutFamilleFixed.HideAll();
 				ajoutMembreFixed.HideAll();
 
@@ -260,20 +349,8 @@ namespace DSInnovation
 
 
 
-		void OnDelete(object obj, DeleteEventArgs args)
-		{
-			Application.Quit();
-		}
-		void OnFileExited (object obj, EventArgs args) {
-			Application.Quit();
-		}
-
-
-
-
 		void AddColumns(TreeView tree) {
 			CellRendererText rendertext = new CellRendererText();
-
 			TreeViewColumn column = new TreeViewColumn("Nom", rendertext, "text", Column.Nom);
 			column.SortColumnId = (int) Column.Nom;
 			tree.AppendColumn(column);
@@ -290,6 +367,18 @@ namespace DSInnovation
 
 		}
 
+		void AddColumnsMember(TreeView tree) {
+			CellRendererText renderText = new CellRendererText();
+			TreeViewColumn column = new TreeViewColumn("Prénom", renderText, "text", 1);
+			column.SortColumnId = 0;
+			treeMember.AppendColumn(column);
+
+			renderText = new CellRendererText();
+			column = new TreeViewColumn("Genre", renderText, "text", 2);
+			column.SortColumnId = 1;
+			treeMember.AppendColumn(column);
+		}
+
 
 		///////////////////////////////////////////////////////////////////////
 		/////////////// Activation lorsque double click sur liste /////////////
@@ -302,7 +391,16 @@ namespace DSInnovation
 				string row = (string) view.Model.GetValue(iter, (int) Column.Nom);
 				familleMembreLabel.Text = "Famille : " + row;
 				messageModifierMembre.Text = "";
+
 				familleChoisi = (int) view.Model.GetValue(iter, (int) Column.Id);
+				nomModifierMembreEntry.Text = familleListe[familleChoisi].Nom;
+				adresseModifierMembreEntry.Text = familleListe[familleChoisi].Adresse;
+				pointModifierLabel.Text = "Points : " + familleListe[familleChoisi].Points;
+				storeMember = CreateModelMember();
+				treeMember.Model = storeMember;
+
+				if(choixMenu == 3)
+					modifierMembreFixed.ShowAll();
 			}
 		}
 
@@ -322,15 +420,16 @@ namespace DSInnovation
 		////////////////// Création de la liste de gauche  ////////////////////
 		///////////////////////////////////////////////////////////////////////
 		static ListStore CreateModel() {
-			ListStore store = new ListStore( typeof(int), typeof(string), typeof(string), typeof(int));
+			ListStore store = new ListStore( typeof(int), typeof(string), typeof(string), typeof(int) );
 
 			int id = 0;
+
 			foreach( Famille familleInfo in familleListe ) {
 				string nom = (string)familleInfo.Nom;
 				if( nom.Contains(nomLook) ) {
 					string listeMembre = "";
 					for(int i =0; i < familleInfo.GetTailleListeMembre; i++ ) {
-						listeMembre += familleInfo.GetMembre(i);
+						listeMembre += familleInfo.GetMembre(i).Prenom;
 
 						if( i < familleInfo.GetTailleListeMembre - 1 ) {
 							listeMembre += "\n";
@@ -340,6 +439,25 @@ namespace DSInnovation
 					id++;
 				}
 			}
+			return store;
+		}
+
+		static ListStore CreateModelMember() {
+			ListStore store = new ListStore( typeof(int), typeof(string), typeof(string) );
+
+			if(familleChoisi != - 1) {
+				try {
+					for(int i = 0; i < familleListe[familleChoisi].GetTailleListeMembre; i++) {
+						if( familleListe[familleChoisi].GetMembre(i).Genre == 0 )
+							store.AppendValues( i, familleListe[familleChoisi].GetMembre(i).Prenom, "homme" );
+						else
+							store.AppendValues( i, familleListe[familleChoisi].GetMembre(i).Prenom, "femme" );
+					}
+				} catch ( Exception e ) {
+					Console.WriteLine("Error(3) : " + e.Message );
+				}
+			}
+
 			return store;
 		}
 

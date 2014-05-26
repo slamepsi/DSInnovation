@@ -15,7 +15,7 @@ namespace DSInnovation
 	public class Famille
 	{
 		private int _id;
-		private static int idStatic = 0;
+		private static int _idStatic = 0;
 		private int _dbid;
 		private string _nom;
 		private string _adresse;
@@ -24,13 +24,13 @@ namespace DSInnovation
 
 
 		public Famille(int dbid, string nom, string adresse, int points) {
-			this._id = idStatic;
+			this._id = _idStatic;
 			this._nom = nom;
 			this._adresse = adresse;
 			this._points = points;
 			this._dbid = dbid;
 			membre = new List<Membre>();
-			idStatic++;
+			_idStatic++;
 		}
 
 		public string Nom {
@@ -52,20 +52,33 @@ namespace DSInnovation
 			get { return this._id; }
 		}
 
+		public void IdDecrement() {
+			Console.WriteLine(this._nom + " id : " + this._id );
+			this._id--;
+		}
+
 		public int Dbid {
 			get { return this._dbid; }
 		}
 
-		public void AddMembre( string prenom, int genre ) {
-			this.membre.Add(new Membre(prenom, genre));
+		public void AddMembre( int id, string prenom, int genre ) {
+			this.membre.Add(new Membre(id, prenom, genre));
 		}
 
-		public string GetMembre( int index ) {
-			return this.membre[index].Prenom;
+		public void DelMembre( int id ) {
+			this.membre.RemoveAt( id );
 		}
 
 		public int GetTailleListeMembre {
 			get { return membre.Count; }
+		}
+
+		public Membre GetMembre( int index ) {
+			return this.membre[index];
+		}
+
+		public static void IdStaticDecrement() {;
+			_idStatic--;
 		}
 	}
 
@@ -89,6 +102,10 @@ namespace DSInnovation
 		public int Genre {
 			get { return this._genre; }
 			set { this._genre = value; }
+		}
+
+		public int Dbid {
+			get { return this._dbid; }
 		}
 	}
 }
