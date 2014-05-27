@@ -68,6 +68,7 @@
     <Compile Include="socket.cs" />
     <Compile Include="personne.cs" />
     <Compile Include="AddPoint.cs" />
+    <Compile Include="memberedit.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

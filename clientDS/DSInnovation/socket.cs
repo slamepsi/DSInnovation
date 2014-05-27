@@ -20,7 +20,7 @@ namespace DSInnovation
 	{
 		TcpClient tcpclient;
 		NetworkStream stream;
-		ASCIIEncoding encoder;
+		UTF8Encoding encoder;
 		Thread receptionThread;
 
 
@@ -28,7 +28,7 @@ namespace DSInnovation
 		{
 			Console.WriteLine("try connection");
 			tcpclient = new TcpClient();
-			encoder = new ASCIIEncoding();
+			encoder = new UTF8Encoding();
 
 			try {
 				//adresse ip
@@ -58,11 +58,9 @@ namespace DSInnovation
 				if(byteRead == 0)
 					break;
 
-				ASCIIEncoding encoder = new ASCIIEncoding();
+				UTF8Encoding encoder = new UTF8Encoding();
 				string information = encoder.GetString(message, 0, byteRead);
 				string[] infoSocket = information.Split(':');
-
-				//Console.WriteLine( information );
 
 				try {
 					switch(infoSocket[0]) {
@@ -105,6 +103,7 @@ namespace DSInnovation
 							if( Interface.familleListe[i].Dbid == int.Parse(infoSocket[1]) ) {
 								for(int j = 0; j < Interface.familleListe[i].GetTailleListeMembre; j++) {
 									if(Interface.familleListe[i].GetMembre(j).Dbid == int.Parse(infoSocket[2]) ) {
+										//Console.WriteLine("Debug : " + Interface.familleListe[i].GetMembre(j).Dbid + " i : " + i + " j : " + j );
 										Interface.familleListe[i].DelMembre(j);
 										break;
 									}

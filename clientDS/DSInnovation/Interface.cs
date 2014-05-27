@@ -129,7 +129,7 @@ namespace DSInnovation
 					if( nomFamilleEntry.Text.Length > 15) {
 						nomFamilleEntry.Text = nomFamilleEntry.Text.Substring(0, 15);
 					}
-					MainClass.GetSocket.sendMessage("addFamily:" + nomFamilleEntry.Text + ":" + adresseFamilleEntry.Text );
+					MainClass.GetSocket.sendMessage("addFamily:" + nomFamilleEntry.Text.Replace(':', '_') + ":" + adresseFamilleEntry.Text.Replace(':', '_') );
 					nomFamilleEntry.Text = "";
 					adresseFamilleEntry.Text = "";
 					familleChoisi = -1;
@@ -169,7 +169,7 @@ namespace DSInnovation
 					if(genreMembreComboBox.Active != -1 && prenomMembreEntry.Text.Length > 3 && familleChoisi != -1 ) {
 						//familleListe[familleChoisi].AddMembre(prenomMembreEntry.Text, genreMembreComboBox.Active );
 
-						MainClass.GetSocket.sendMessage("addMember:"+ familleListe[familleChoisi].Dbid + ":" + prenomMembreEntry.Text + ":" + genreMembreComboBox.Active);
+						MainClass.GetSocket.sendMessage("addMember:"+ familleListe[familleChoisi].Dbid + ":" + prenomMembreEntry.Text.Replace(':', '_') + ":" + genreMembreComboBox.Active);
 						prenomMembreEntry.Text = "";
 						genreMembreComboBox.Active = -1;
 						familleChoisi = -1;
@@ -205,13 +205,14 @@ namespace DSInnovation
 			addPoint.Clicked += delegate {
 				AddPoint test = new AddPoint(familleListe[familleChoisi].Dbid, familleListe[familleChoisi].Nom);
 				test.KeepAbove = true;
+				test.Decorated = false;
 			};
 
 			Button delPoint = new Button("Enlever des points");
 			delPoint.Clicked += delegate {
-				addPoint.CanFocus = false;
 				DelPoint test = new DelPoint(familleListe[familleChoisi].Dbid, familleListe[familleChoisi].Nom);
 				test.KeepAbove = true;
+				test.Decorated = false;
 			};
 
 			Label nomModifierMembreLabel = new Label("Nom : ");
@@ -227,26 +228,31 @@ namespace DSInnovation
 			storeMember = CreateModelMember();
 			treeMember = new TreeView(storeMember);
 			treeMember.RulesHint = true;
-			treeMember.RowActivated += delegate {
-				
-			};
+			treeMember.RowActivated += OnRowActivatedMember;
 			AddColumnsMember(treeMember);
 			treeMember.SetSizeRequest( 200, 300 );
 
 
 			Button supprimerFamilleButton = new Button("Supprimer la famille");
 			supprimerFamilleButton.Clicked += delegate {
-				MainClass.GetSocket.sendMessage("delFamily:" + familleListe[familleChoisi].Dbid);
-				modifierMembreFixed.HideAll();
-				messageModifierMembre.Text = "Veuillez choisir dans la liste de gauche la famille à modifier.";
-				modifierMembreFixed.Show();
-				messageModifierMembre.Show();
+				MessageDialog md = new MessageDialog(this, 
+				                                     DialogFlags.DestroyWithParent, MessageType.Warning, 
+				                                     ButtonsType.YesNo, "Êtes vous sûr de vouloir supprimer la famille " + familleListe[familleChoisi].Nom );
+				ResponseType response = (ResponseType) md.Run();
+				md.Destroy();
+
+				if( response == ResponseType.Yes) {
+					MainClass.GetSocket.sendMessage("delFamily:" + familleListe[familleChoisi].Dbid);
+					familleChoisi = -1;
+					messageModifierMembre.Text = "Veuillez choisir dans la liste de gauche la famille à modifier.";
+					modifierMembreFixed.HideAll();
+				}
 			};
 			Button modifierFamilleButton = new Button("Modifier la famille");
 			modifierFamilleButton.Clicked += delegate {
 				try {
-					MainClass.GetSocket.sendMessage("updFamily:"+familleListe[familleChoisi].Dbid + ":" + nomModifierMembreEntry.Text + 
-				                          	      ":" + adresseModifierMembreEntry.Text );
+					MainClass.GetSocket.sendMessage("updFamily:"+familleListe[familleChoisi].Dbid + ":" + nomModifierMembreEntry.Text.Replace(':', '_') + 
+					                                ":" + adresseModifierMembreEntry.Text.Replace(':', '_') );
 				} catch {
 					modifierMembreFixed.HideAll();
 					messageModifierMembre.Text = "La famille Choisie n'existe plus.\n\nVeuillez choisir dans la liste de gauche la famille à modifier.";
@@ -386,21 +392,35 @@ namespace DSInnovation
 		void OnRowActivated(object sender, RowActivatedArgs args) {
 			TreeIter iter;
 			TreeView view = (TreeView) sender;
-
+			
 			if(view.Model.GetIter(out iter, args.Path )) {
 				string row = (string) view.Model.GetValue(iter, (int) Column.Nom);
 				familleMembreLabel.Text = "Famille : " + row;
 				messageModifierMembre.Text = "";
-
+				
 				familleChoisi = (int) view.Model.GetValue(iter, (int) Column.Id);
 				nomModifierMembreEntry.Text = familleListe[familleChoisi].Nom;
 				adresseModifierMembreEntry.Text = familleListe[familleChoisi].Adresse;
 				pointModifierLabel.Text = "Points : " + familleListe[familleChoisi].Points;
 				storeMember = CreateModelMember();
 				treeMember.Model = storeMember;
-
+				
 				if(choixMenu == 3)
 					modifierMembreFixed.ShowAll();
+			}
+		}
+
+
+		void OnRowActivatedMember(object sender, RowActivatedArgs args) {
+			TreeIter iter;
+			TreeView view = (TreeView) sender;
+			
+			if(view.Model.GetIter(out iter, args.Path )) {
+				int membreChoisi = (int) view.Model.GetValue( iter, 0 );
+
+				memberedit membrepanel = new memberedit(familleChoisi, membreChoisi);
+				membrepanel.KeepAbove = true;
+				membrepanel.Decorated = false;
 			}
 		}
 
@@ -426,7 +446,7 @@ namespace DSInnovation
 
 			foreach( Famille familleInfo in familleListe ) {
 				string nom = (string)familleInfo.Nom;
-				if( nom.Contains(nomLook) ) {
+				if( nom.ToUpper().Contains(nomLook.ToUpper()) ) {
 					string listeMembre = "";
 					for(int i =0; i < familleInfo.GetTailleListeMembre; i++ ) {
 						listeMembre += familleInfo.GetMembre(i).Prenom;
@@ -444,7 +464,6 @@ namespace DSInnovation
 
 		static ListStore CreateModelMember() {
 			ListStore store = new ListStore( typeof(int), typeof(string), typeof(string) );
-
 			if(familleChoisi != - 1) {
 				try {
 					for(int i = 0; i < familleListe[familleChoisi].GetTailleListeMembre; i++) {
@@ -464,6 +483,9 @@ namespace DSInnovation
 		public static void refreshList() {
 			store = CreateModel();
 			tree.Model = store;
+
+			storeMember = CreateModelMember();
+			treeMember.Model = storeMember;
 		}
 	}
 }

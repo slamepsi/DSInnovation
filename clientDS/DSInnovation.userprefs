@@ -1,11 +1,12 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="DSInnovation/personne.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="DSInnovation/socket.cs">
     <Files>
       <File FileName="DSInnovation/Main.cs" Line="26" Column="4" />
-      <File FileName="DSInnovation/socket.cs" Line="114" Column="43" />
-      <File FileName="DSInnovation/personne.cs" Line="66" Column="3" />
-      <File FileName="DSInnovation/Interface.cs" Line="223" Column="40" />
+      <File FileName="DSInnovation/socket.cs" Line="17" Column="23" />
+      <File FileName="DSInnovation/personne.cs" Line="57" Column="15" />
+      <File FileName="DSInnovation/Interface.cs" Line="222" Column="45" />
+      <File FileName="DSInnovation/AddPoint.cs" Line="76" Column="20" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

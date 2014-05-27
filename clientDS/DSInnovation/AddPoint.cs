@@ -14,12 +14,14 @@ namespace DSInnovation
 {
 	public class AddPoint : Window
 	{
-		public AddPoint (int idFamily,string info) : base ("Ajout de points : " + info)
+		public AddPoint (int idFamily,string info) : base ("Ajout de points")
 		{
 			SetDefaultSize(275, 150);
 			this.WindowPosition = WindowPosition.Center;
 
 			Fixed fix = new Fixed();
+
+			Label texteInfo = new Label("Ajout de points : " + info);
 
 			Label nombrePointLabel = new Label("Nombre de points : ");
 
@@ -46,8 +48,9 @@ namespace DSInnovation
 			};
 			ok.SetSizeRequest( 100, 50 );
 
-			fix.Put ( nombrePointLabel, 50, 25 );
-			fix.Put ( nombrePointEntry, 175, 20 );
+			fix.Put ( texteInfo, 50, 25 );
+			fix.Put ( nombrePointLabel, 50, 50 );
+			fix.Put ( nombrePointEntry, 175, 45 );
 			fix.Put ( cancel, 25, 75 );
 			fix.Put ( ok, 150, 75 );
 
@@ -65,7 +68,9 @@ namespace DSInnovation
 			this.WindowPosition = WindowPosition.Center;
 			
 			Fixed fix = new Fixed();
-			
+
+			Label texteInfo = new Label("Suppression de points : " + info);
+
 			Label nombrePointLabel = new Label("Nombre de points : ");
 			
 			Entry nombrePointEntry = new Entry();
@@ -77,7 +82,7 @@ namespace DSInnovation
 			};
 			cancel.SetSizeRequest( 100, 50 );
 			
-			Button ok = new Button("Valider");
+			Button ok = new Button("Modifier");
 			ok.Clicked += delegate {
 				try {
 					int points = int.Parse(nombrePointEntry.Text);
@@ -91,9 +96,10 @@ namespace DSInnovation
 				}
 			};
 			ok.SetSizeRequest( 100, 50 );
-			
-			fix.Put ( nombrePointLabel, 50, 25 );
-			fix.Put ( nombrePointEntry, 175, 20 );
+
+			fix.Put ( texteInfo, 50, 25 );
+			fix.Put ( nombrePointLabel, 50, 50 );
+			fix.Put ( nombrePointEntry, 175, 45 );
 			fix.Put ( cancel, 25, 75 );
 			fix.Put ( ok, 150, 75 );
 			
